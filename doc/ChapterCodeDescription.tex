@@ -1,0 +1,23 @@
+\chapter{The Classes and Functions}
+
+\section{The classes}
+
+\subsection{FileObject}
+This class defines an object with the following attributes:
+\paragraph{\bf name} It contains the file name of a {\tt FileObject}
+\paragraph{\bf md5hex} It contains the MD5 hex digest of the file. Initial value is {\tt None}. Its value is set through the {\tt hash()} attribute by invoking the function {\tt GetMD5Sum}.
+\paragraph{\bf hash()} This function will generate the MD5 checksum hexdigest (if the {\bf md5hex} is {\tt None}) by invoking the {\tt GetMD5Sum} function. \marginpar{\tiny What if the file was modified after the MD5 sum was generated? Compare the time when md5hex was assigned and the time of last access of the file?}
+
+\section{The Functions}
+
+\subsection{GetMD5Sum}
+\subsubsection{Arguments}
+\paragraph{\tt filename} A {\it string} containing file's name including the full path.
+\paragraph{\tt chunksize} (Optional). The buffer size for reading the file in parts. Default value is 25600 bytes.
+
+\subsubsection{Return value}
+The MD5 hexdigest for the file.
+
+\subsection{FileList}
+
+\section 

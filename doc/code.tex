@@ -1,0 +1,86 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k+kn}{import} \PY{n+nn}{hashlib}\PY{o}{,} \PY{n+nn}{os}\PY{o}{,} \PY{n+nn}{sys}
+
+
+
+\PY{k}{def} \PY{n+nf}{FileList}\PY{p}{(}\PY{n}{root}\PY{p}{)}\PY{p}{:}
+    \PY{l+s+sd}{'''Generates the list of files in the list "root" }
+\PY{l+s+sd}{       (of directories) by walking through it and its }
+\PY{l+s+sd}{       subfolders.}
+\PY{l+s+sd}{    '''}
+
+    \PY{k}{for} \PY{n}{root} \PY{o+ow}{in} \PY{n}{roots}\PY{p}{:}
+        \PY{n}{m}\PY{o}{=}\PY{n}{os}\PY{o}{.}\PY{n}{walk}\PY{p}{(}\PY{n}{root}\PY{p}{)}
+        \PY{k}{for} \PY{n}{dirpath}\PY{p}{,} \PY{n}{subdirs}\PY{p}{,} \PY{n}{filenames} \PY{o+ow}{in} \PY{n}{m}\PY{p}{:}
+            \PY{k}{for} \PY{n}{name} \PY{o+ow}{in} \PY{n}{filenames}\PY{p}{:}
+                \PY{n}{fpath}\PY{o}{=}\PY{n}{os}\PY{o}{.}\PY{n}{path}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{n}{dirpath}\PY{p}{,}\PY{n}{name}\PY{p}{)}
+                \PY{k}{try}\PY{p}{:}
+                    \PY{n}{fsize}\PY{o}{=}\PY{n}{os}\PY{o}{.}\PY{n}{path}\PY{o}{.}\PY{n}{getsize}\PY{p}{(}\PY{n}{fpath}\PY{p}{)}
+                    \PY{k}{yield} \PY{n}{fpath}
+                \PY{k}{except} \PY{n+ne}{OSError}\PY{p}{:}
+                    \PY{k}{pass}
+
+\PY{k}{def} \PY{n+nf}{GetMD5Sum}\PY{p}{(}\PY{n}{filename}\PY{p}{,} \PY{n}{chunksize}\PY{o}{=}\PY{l+m+mi}{25600}\PY{p}{)}\PY{p}{:}
+    \PY{l+s+sd}{'''Returns the md5 hash for the file "file" using }
+\PY{l+s+sd}{       a default buffer size of 25600 bytes.}
+\PY{l+s+sd}{    '''}
+    \PY{n}{f} \PY{o}{=} \PY{n+nb}{open}\PY{p}{(}\PY{n}{filename}\PY{p}{,}\PY{l+s}{'}\PY{l+s}{rb}\PY{l+s}{'}\PY{p}{)}
+    \PY{n}{md5sum} \PY{o}{=} \PY{n}{hashlib}\PY{o}{.}\PY{n}{md5}\PY{p}{(}\PY{p}{)}
+    \PY{n}{eof} \PY{o}{=} \PY{n+nb+bp}{False}
+
+    \PY{n}{fname}\PY{o}{=}\PY{n}{filename}\PY{o}{.}\PY{n}{split}\PY{p}{(}\PY{l+s}{'}\PY{l+s}{/}\PY{l+s}{'}\PY{p}{)}\PY{p}{[}\PY{o}{-}\PY{l+m+mi}{1}\PY{p}{]}
+    \PY{c}{# TO DO : make this OS independent}
+
+    \PY{k}{while} \PY{n}{eof}\PY{o}{==}\PY{n+nb+bp}{False}\PY{p}{:}
+        \PY{n}{oldsum}\PY{o}{=}\PY{n}{md5sum}\PY{o}{.}\PY{n}{hexdigest}\PY{p}{(}\PY{p}{)}
+        \PY{n}{data} \PY{o}{=} \PY{n}{f}\PY{o}{.}\PY{n}{read}\PY{p}{(}\PY{n}{chunksize}\PY{p}{)}
+        \PY{n}{md5sum}\PY{o}{.}\PY{n}{update}\PY{p}{(}\PY{n}{data}\PY{p}{)}
+        \PY{k}{if} \PY{n}{oldsum}\PY{o}{==}\PY{n}{md5sum}\PY{o}{.}\PY{n}{hexdigest}\PY{p}{(}\PY{p}{)}\PY{p}{:}
+            \PY{n}{eof} \PY{o}{=} \PY{n+nb+bp}{True}
+    \PY{n}{f}\PY{o}{.}\PY{n}{close}\PY{p}{(}\PY{p}{)}
+    \PY{k}{return} \PY{n}{md5sum}\PY{o}{.}\PY{n}{hexdigest}\PY{p}{(}\PY{p}{)}
+
+\PY{k}{class} \PY{n+nc}{FileObject}\PY{p}{(}\PY{p}{)}\PY{p}{:}
+    \PY{k}{def} \PY{n+nf}{\PYZus{}\PYZus{}init\PYZus{}\PYZus{}}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{,} \PY{n}{filename}\PY{p}{)}\PY{p}{:}
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{name} \PY{o}{=} \PY{n}{filename}
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{md5hex}\PY{o}{=}\PY{n+nb+bp}{None}
+    \PY{k}{def} \PY{n+nf}{hash}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{)}\PY{p}{:}
+        \PY{k}{if} \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{md5hex} \PY{o+ow}{is} \PY{n+nb+bp}{None}\PY{p}{:}
+            \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{md5hex} \PY{o}{=} \PY{n}{GetMD5Sum}\PY{p}{(}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{name}\PY{p}{)}
+
+
+
+\PY{k}{def} \PY{n+nf}{GetDuplicates}\PY{p}{(}\PY{n}{roots}\PY{p}{)}\PY{p}{:}
+    \PY{c}{# generate the file list}
+    \PY{n}{result}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+    \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n}{FileList}\PY{p}{(}\PY{n}{roots}\PY{p}{)}\PY{p}{:}
+        \PY{n}{result}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{FileObject}\PY{p}{(}\PY{n}{i}\PY{p}{)}\PY{p}{)}
+    
+    \PY{c}{# generate the hashes}
+    \PY{n+nb}{map}\PY{p}{(}\PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{n}{x}\PY{o}{.}\PY{n}{hash}\PY{p}{(}\PY{p}{)}\PY{p}{,} \PY{n}{result}\PY{p}{)}
+
+    \PY{c}{# generate the hash dictionary}
+    \PY{n}{hashlist}\PY{o}{=}\PY{p}{\PYZob{}}\PY{p}{\PYZcb{}}
+    \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{result}\PY{p}{)}\PY{p}{)}\PY{p}{:}
+        \PY{n}{hashlist}\PY{p}{[}\PY{n}{result}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{o}{.}\PY{n}{md5hex}\PY{p}{]}\PY{o}{=}\PY{p}{[}\PY{p}{]}
+
+    \PY{c}{# populate the hash dictionary with }
+    \PY{c}{#  key   -> md5 hex digest}
+    \PY{c}{#  value -> list of file names with the hex digest in key}
+    \PY{n+nb}{map}\PY{p}{(}\PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{n}{hashlist}\PY{p}{[}\PY{n}{x}\PY{o}{.}\PY{n}{md5hex}\PY{p}{]}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{x}\PY{o}{.}\PY{n}{name}\PY{p}{)}\PY{p}{,} \PY{n}{result}\PY{p}{)}
+
+
+    \PY{c}{# remove all the keys of length 1 (i.e., files with no duplicates)}
+    \PY{k}{for} \PY{n}{each} \PY{o+ow}{in} \PY{n}{hashlist}\PY{o}{.}\PY{n}{keys}\PY{p}{(}\PY{p}{)}\PY{p}{:}
+        \PY{k}{if} \PY{n+nb}{len}\PY{p}{(}\PY{n}{hashlist}\PY{p}{[}\PY{n}{each}\PY{p}{]}\PY{p}{)}\PY{o}{==}\PY{l+m+mi}{1}\PY{p}{:}
+            \PY{k}{del}\PY{p}{(}\PY{n}{hashlist}\PY{p}{[}\PY{n}{each}\PY{p}{]}\PY{p}{)}
+
+    \PY{c}{# return a dictionary of with }
+    \PY{c}{#   values : the lists of duplicate files}
+    \PY{c}{#   keys   : the md5 hexdigest}
+    \PY{k}{return} \PY{n}{hashlist}
+
+\PY{k}{if} \PY{n}{\PYZus{}\PYZus{}name\PYZus{}\PYZus{}}\PY{o}{==}\PY{l+s}{'}\PY{l+s}{\PYZus{}\PYZus{}main\PYZus{}\PYZus{}}\PY{l+s}{'}\PY{p}{:}
+    \PY{n}{roots} \PY{o}{=} \PY{p}{[}\PY{l+s}{'}\PY{l+s}{/home/subimal/Music/}\PY{l+s}{'} \PY{p}{]}
+    \PY{k}{print} \PY{n}{GetDuplicates}\PY{p}{(}\PY{n}{roots}\PY{p}{)}
+\end{Verbatim}
