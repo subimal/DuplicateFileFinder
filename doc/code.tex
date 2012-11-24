@@ -42,7 +42,10 @@
 
 \PY{k}{class} \PY{n+nc}{FileObject}\PY{p}{(}\PY{p}{)}\PY{p}{:}
     \PY{k}{def} \PY{n+nf}{\PYZus{}\PYZus{}init\PYZus{}\PYZus{}}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{,} \PY{n}{filename}\PY{p}{)}\PY{p}{:}
+        \PY{k+kn}{from} \PY{n+nn}{os.path} \PY{k+kn}{import} \PY{n}{getsize}
+
         \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{name} \PY{o}{=} \PY{n}{filename}
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{size} \PY{o}{=} \PY{n}{getsize}\PY{p}{(}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{name}\PY{p}{)}
         \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{md5hex}\PY{o}{=}\PY{n+nb+bp}{None}
     \PY{k}{def} \PY{n+nf}{hash}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{)}\PY{p}{:}
         \PY{k}{if} \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{md5hex} \PY{o+ow}{is} \PY{n+nb+bp}{None}\PY{p}{:}
@@ -55,8 +58,12 @@
     \PY{n}{result}\PY{o}{=}\PY{p}{[}\PY{p}{]}
     \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n}{FileList}\PY{p}{(}\PY{n}{roots}\PY{p}{)}\PY{p}{:}
         \PY{n}{result}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{FileObject}\PY{p}{(}\PY{n}{i}\PY{p}{)}\PY{p}{)}
+
+    \PY{c}{# remove files with unique sizes from the list}
+    \PY{n}{result}\PY{o}{=}\PY{n+nb}{filter}\PY{p}{(}\PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{n+nb}{map}\PY{p}{(}\PY{k}{lambda} \PY{n}{y}\PY{p}{:} \PY{n}{y}\PY{o}{.}\PY{n}{size}\PY{p}{,} \PY{n}{result}\PY{p}{)}\PY{o}{.}\PY{n}{count}\PY{p}{(}\PY{n}{x}\PY{o}{.}\PY{n}{size}\PY{p}{)}\PY{o}{>}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{result}\PY{p}{)}
+        
     
-    \PY{c}{# generate the hashes}
+    \PY{c}{# generate the hashes for possible duplicates}
     \PY{n+nb}{map}\PY{p}{(}\PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{n}{x}\PY{o}{.}\PY{n}{hash}\PY{p}{(}\PY{p}{)}\PY{p}{,} \PY{n}{result}\PY{p}{)}
 
     \PY{c}{# generate the hash dictionary}
@@ -81,6 +88,7 @@
     \PY{k}{return} \PY{n}{hashlist}
 
 \PY{k}{if} \PY{n}{\PYZus{}\PYZus{}name\PYZus{}\PYZus{}}\PY{o}{==}\PY{l+s}{'}\PY{l+s}{\PYZus{}\PYZus{}main\PYZus{}\PYZus{}}\PY{l+s}{'}\PY{p}{:}
-    \PY{n}{roots} \PY{o}{=} \PY{p}{[}\PY{l+s}{'}\PY{l+s}{/home/subimal/Music/}\PY{l+s}{'} \PY{p}{]}
-    \PY{k}{print} \PY{n}{GetDuplicates}\PY{p}{(}\PY{n}{roots}\PY{p}{)}
+    \PY{n}{roots} \PY{o}{=} \PY{p}{[}\PY{l+s}{'}\PY{l+s}{/home/subimal/Desktop/Backup}\PY{l+s}{'} \PY{p}{]}
+    \PY{n}{a}\PY{o}{=}\PY{n}{GetDuplicates}\PY{p}{(}\PY{n}{roots}\PY{p}{)}
+    \PY{k}{print} \PY{n}{a}
 \end{Verbatim}

@@ -1,3 +1,5 @@
 pygmentize -f latex ../DuplicateFinder1.py > code.tex
 pdflatex DuplicateFinder.tex
-rm ./*.aux ./*.log
+pdflatex DuplicateFinder.tex
+pdflatex DuplicateFinder.tex
+rm ./*.aux ./*.log ./*.toc
