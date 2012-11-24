@@ -41,7 +41,10 @@ def GetMD5Sum(filename, chunksize=25600):
 
 class FileObject():
     def __init__(self, filename):
+        from os.path import getsize
+
         self.name = filename
+        self.size = getsize(self.name)
         self.md5hex=None
     def hash(self):
         if self.md5hex is None:
@@ -54,8 +57,12 @@ def GetDuplicates(roots):
     result=[]
     for i in FileList(roots):
         result.append(FileObject(i))
+
+    # remove files with unique sizes from the list
+    result=filter(lambda x: map(lambda y: y.size, result).count(x.size)>1, result)
+        
     
-    # generate the hashes
+    # generate the hashes for possible duplicates
     map(lambda x: x.hash(), result)
 
     # generate the hash dictionary
@@ -80,5 +87,6 @@ def GetDuplicates(roots):
     return hashlist
 
 if __name__=='__main__':
-    roots = ['/home/subimal/Music/' ]
-    print GetDuplicates(roots)
+    roots = ['/home/subimal/Desktop/Backup' ]
+    a=GetDuplicates(roots)
+    print a
